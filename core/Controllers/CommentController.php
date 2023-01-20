@@ -65,7 +65,6 @@ class CommentController extends AbstractController
 
         $id = null;
         $content = null;
-        $post_id = null;
 
         if(!empty($_POST['id']) && ctype_digit($_POST['id']) ){
             $id = $_POST['id'];
@@ -80,11 +79,21 @@ class CommentController extends AbstractController
             $comment->setContent($content);
 
             $this->defaultEntity->update($comment);
+
             return $this->redirect("?type=post&action=show&id={$comment->getPostId()}");
 
         }
 
-        //algo show trouver comm findid
+        $id = null;
+
+        if(!empty($_GET['id']) && ctype_digit($_GET['id']) ){
+            $id = $_GET['id'];
+        }
+        if(!$id){ return $this->redirect(); }
+
+        $comment = $this->defaultEntity->findById($id);
+
+        if(!$comment){ return $this->redirect("?type=post&action=show&id={$comment->getPostId()}");}
 
 
         return $this->render("comments/update", [

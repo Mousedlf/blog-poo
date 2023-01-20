@@ -30,7 +30,7 @@ class Comment extends AbstractEntity
     }
 
     public function update(Comment $comment){
-        $request= $this->pdo->prepare('UPDATE comments SET content = :content  WHERE id = :id');
+        $request= $this->pdo->prepare('UPDATE comments SET content = :content WHERE id = :id');
         $request->execute([
             'id'=>$comment->getId(),
             'content'=>$comment->getContent()
