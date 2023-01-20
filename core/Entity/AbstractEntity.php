@@ -1,14 +1,13 @@
 <?php
 
 namespace Entity;
-require_once ('core/Database/PDOMySQL.php');
 
 class AbstractEntity
 {
     protected $tableName ;
     protected \PDO $pdo;
     public function __construct(){
-        $this->pdo = \Database\PDOMySQL::getPdo();
+        $this->pdo = \App\Database\PDOMySQL::getPdo();
     }
 
     public function findAll()

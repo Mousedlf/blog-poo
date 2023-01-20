@@ -2,6 +2,9 @@
 
 namespace Controllers;
 
+use Entity\Comment;
+use Entity\Post;
+
 class CommentController extends AbstractController
 {
     protected string $defaultEntityName = Comment::class;
@@ -15,18 +18,16 @@ class CommentController extends AbstractController
             $id = $_GET['id'];
         }
 
-        // if!id redirect
-
+        if(!$id) { return $this->redirect();}
 
         if($id){
-
             $comment = $this->defaultEntity->findById($id);
 
             if($comment){
                 $this->defaultEntity->delete($comment);
             }
 
-            return $this->redirect('post.php?id='.$comment->getPostId()); //typeid commentgetpid
+            return $this->redirect("?type=post&action=show&id={$comment->getPostId()}");
 
         }}
 
@@ -35,27 +36,26 @@ class CommentController extends AbstractController
         $post_id = null;
         $content=null;
 
-        if( !empty($_POST['post_id'])){ // && ctype_digit
+        if( !empty($_POST['post_id']) && ctype_digit($_POST['post_id'])){
             $post_id = $_POST['post_id'];
         }
         if( !empty($_POST['content'])){
-            $content = $_POST['content']; //htmlspecialchars[$post
+            $content = htmlspecialchars($_POST['content']);
         }
 
         if($post_id && $content){
 
-            //postZnt= new P + use ent/p
+            $postEntity= new Post();
+            $post= $postEntity->findById($post_id);
+            if(!$post){ return $this->redirect();};
 
-            // $post = $this->defaultEntity->findById($post_id);
-            //if !post return
-
-            // new C
+            $comment = new Comment();
             $comment->setContent($content);
             $comment->setPostId($post_id);
 
             $this->defaultEntity->insert($comment);
 
-            return $this->redirect("post.php?id=$post_id"); //typeactionid{$postgetId
+            return $this->redirect("?type=post&action=show&id={$comment->getPostId()}");
 
         }
 
@@ -63,12 +63,34 @@ class CommentController extends AbstractController
 
     public function change(){
 
-        //verif id en method post
-        //verif content
-        //si id et content ; findbyid ; setcont ; update //creer function ds Comment
+        $id = null;
+        $content = null;
+        $post_id = null;
+
+        if(!empty($_POST['id']) && ctype_digit($_POST['id']) ){
+            $id = $_POST['id'];
+        }
+        if( !empty($_POST['content'])){
+            $content = htmlspecialchars($_POST['content']);
+        }
+
+        if($id && $content){
+
+            $comment = $this->defaultEntity->findById($id);
+            $comment->setContent($content);
+
+            $this->defaultEntity->update($comment);
+            return $this->redirect("?type=post&action=show&id={$comment->getPostId()}");
+
+        }
 
         //algo show trouver comm findid
-        //render commupdate
+
+
+        return $this->render("comments/update", [
+            "comment"=> $comment,
+            "pageTitle"=>"Edit comment"
+            ]);
 
     }
 

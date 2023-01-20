@@ -2,9 +2,6 @@
 
 namespace Entity;
 
-require_once ('core/Entity/AbstractEntity.php');
-
-
 class Comment extends AbstractEntity
 {
 
@@ -29,6 +26,14 @@ class Comment extends AbstractEntity
         $request->execute([
             "post_id"=> $comment->getPostId(),
             "content"=>$comment->getContent()
+        ]);
+    }
+
+    public function update(Comment $comment){
+        $request= $this->pdo->prepare('UPDATE comments SET content = :content  WHERE id = :id');
+        $request->execute([
+            'id'=>$comment->getId(),
+            'content'=>$comment->getContent()
         ]);
     }
 
